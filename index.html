@@ -7,100 +7,108 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Rubik+Mono+One&display=swap" rel="stylesheet">
 <style>
-:root{
-  --tile:#e9f3f1; --grout:#c9dcd8; --brown:#5a3418; --choc:#7b4a22;
-  --mustard:#f2b632; --paper:#fffdf6; --ink:#2b1a0c; --red:#d8452f;
-}
+:root{--brown:#4a2810;--choc:#7b4a22;--mustard:#f7c948;--paper:#fffdf6;--ink:#2b1a0c;--red:#d8452f;--pink:#ff8fb1}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%}
-body{
-  font-family:'Rubik',system-ui,sans-serif;color:var(--ink);
-  background-color:var(--tile);
-  background-image:linear-gradient(var(--grout) 2px,transparent 2px),linear-gradient(90deg,var(--grout) 2px,transparent 2px);
-  background-size:56px 56px;
-  padding:env(safe-area-inset-top,0) 16px calc(env(safe-area-inset-bottom,0) + 24px);
-  max-width:480px;margin:0 auto;text-align:center;
-}
-h1{font-family:'Rubik Mono One',Impact,sans-serif;font-size:26px;margin:22px 0 4px;color:var(--brown);letter-spacing:.5px}
-.sub{margin:0 0 14px;font-size:14px;color:#6b5238}
-.rank{display:inline-block;background:var(--mustard);color:var(--ink);font-weight:600;font-size:14px;padding:6px 14px;border-radius:99px;border:2px solid var(--ink);transform:rotate(-2deg)}
-.total{font-family:'Rubik Mono One',Impact,sans-serif;font-size:84px;line-height:1;margin:14px 0 0;color:var(--brown)}
-.total small{display:block;font-family:'Rubik',sans-serif;font-size:15px;color:#6b5238;margin-top:4px}
-.btn{
-  position:relative;width:210px;height:210px;margin:18px auto 10px;border-radius:50%;
-  background:var(--paper);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);
-  font-size:112px;line-height:1;cursor:pointer;display:block;padding:0;
-  transition:transform .08s,box-shadow .08s;
-}
-.btn:active,.btn.pop{transform:translateY(8px) scale(.96);box-shadow:0 0 0 var(--ink)}
-.cta{font-weight:600;font-size:17px;margin:4px 0 18px}
+html,body{margin:0;min-height:100%;overflow-x:hidden}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--ink);background:#f2b632}
+/* вращающиеся лучи */
+.rays{position:fixed;left:50%;top:40%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;z-index:0;
+  background:repeating-conic-gradient(#ffd45a 0 9deg,#f2a93a 9deg 18deg);animation:spin 90s linear infinite}
+.vig{position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 50% 35%,transparent 35%,rgba(120,55,10,.35) 100%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* плавающий фон */
+.bg{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.bg span{position:absolute;bottom:-60px;opacity:.28;animation:drift linear infinite}
+@keyframes drift{from{transform:translateY(0) rotate(0)}to{transform:translateY(-120vh) rotate(360deg)}}
+.app{position:relative;z-index:2;max-width:480px;margin:0 auto;text-align:center;
+  padding:env(safe-area-inset-top,0) 16px calc(env(safe-area-inset-bottom,0) + 24px)}
+h1{font-family:'Rubik Mono One',Impact,sans-serif;font-size:27px;margin:22px 0 4px;color:var(--brown);
+  text-shadow:2px 2px 0 #fff,4px 4px 0 var(--pink);display:inline-block;animation:wob 3s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+.sub{margin:4px 0 14px;font-size:14px;font-weight:600;color:var(--brown)}
+.rank{display:inline-block;background:var(--paper);font-weight:600;font-size:14px;padding:6px 14px;border-radius:99px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);transform:rotate(-2deg)}
+.total{font-family:'Rubik Mono One',Impact,sans-serif;font-size:88px;line-height:1;margin:14px 0 0;color:var(--brown);text-shadow:3px 3px 0 #fff,6px 6px 0 var(--pink)}
+.total small{display:block;font-family:'Rubik',sans-serif;font-size:15px;font-weight:600;text-shadow:none;margin-top:6px}
+.total.bump{animation:bump .35s}
+@keyframes bump{40%{transform:scale(1.25) rotate(-4deg)}}
+.btn{position:relative;width:220px;height:220px;margin:18px auto 10px;border-radius:50%;
+  background:var(--paper);border:4px solid var(--ink);box-shadow:0 9px 0 var(--ink);
+  font-size:120px;line-height:1;cursor:pointer;display:block;padding:0;transition:transform .08s,box-shadow .08s;animation:idle 2.2s ease-in-out infinite}
+@keyframes idle{0%,100%{transform:rotate(-3deg) scale(1)}50%{transform:rotate(3deg) scale(1.04)}}
+.btn:active{animation:none;transform:translateY(9px) scale(.95);box-shadow:0 0 0 var(--ink)}
+.cta{font-weight:600;font-size:17px;margin:6px 0 18px;color:var(--brown)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.stat{background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:10px 4px}
+.stat{background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:10px 4px;box-shadow:3px 3px 0 var(--ink)}
+.stat:nth-child(2){transform:rotate(1.5deg)}.stat:nth-child(1){transform:rotate(-1.5deg)}
 .stat b{display:block;font-family:'Rubik Mono One',Impact,sans-serif;font-size:24px;color:var(--choc)}
 .stat span{font-size:12px;color:#6b5238}
-.week{background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:12px 10px 8px;margin-bottom:14px}
+.week{background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:12px 10px 8px;margin-bottom:14px;box-shadow:3px 3px 0 var(--ink)}
 .bars{display:flex;align-items:flex-end;justify-content:space-between;height:90px;gap:6px}
 .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:#6b5238}
 .bar i{display:block;width:100%;background:var(--choc);border-radius:6px 6px 0 0;min-height:3px;transition:height .25s}
 .bar em{font-style:normal;font-weight:600;color:var(--ink);margin-bottom:2px}
 .bar u{text-decoration:none;margin-top:4px}
-.last{font-size:14px;color:#6b5238;margin:0 0 10px}
-.undo{background:none;border:0;font:inherit;font-size:14px;color:var(--red);text-decoration:underline;padding:8px;cursor:pointer}
+.last{font-size:14px;font-weight:600;color:var(--brown);margin:0 0 10px}
+.undo{background:none;border:0;font:inherit;font-size:14px;font-weight:600;color:var(--red);text-decoration:underline;padding:8px;cursor:pointer}
 .undo:disabled{opacity:.35}
-.float{position:fixed;font-size:34px;pointer-events:none;animation:up .9s ease-out forwards}
-@keyframes up{from{opacity:1;transform:translateY(0) rotate(0)}to{opacity:0;transform:translateY(-140px) rotate(25deg)}}
-@media (prefers-reduced-motion:reduce){.float{animation:none;display:none}.btn{transition:none}}
+.float{position:fixed;font-size:34px;pointer-events:none;z-index:5;animation:up .9s ease-out forwards}
+@keyframes up{from{opacity:1;transform:translateY(0) rotate(0)}to{opacity:0;transform:translateY(-150px) rotate(30deg)}}
+/* праздник каждые 10 */
+.rain{position:fixed;top:-60px;z-index:20;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(var(--r))}}
+.party{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.party div{background:var(--paper);border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);border-radius:22px;padding:18px 22px;max-width:86%;text-align:center;animation:pop 2.6s forwards}
+.party big{display:block;font-family:'Rubik Mono One',Impact,sans-serif;font-size:34px;color:var(--brown);text-shadow:2px 2px 0 var(--pink)}
+.party p{margin:8px 0 0;font-weight:600;font-size:16px}
+@keyframes pop{0%{transform:scale(0) rotate(-15deg)}12%{transform:scale(1.15) rotate(4deg)}20%{transform:scale(1) rotate(-2deg)}85%{transform:scale(1) rotate(2deg);opacity:1}100%{transform:scale(.6);opacity:0}}
+.shake{animation:shake .6s}
+@keyframes shake{20%{transform:translate(-6px,3px) rotate(-1deg)}40%{transform:translate(6px,-3px) rotate(1deg)}60%{transform:translate(-5px,2px)}80%{transform:translate(4px,-2px)}}
+@media (prefers-reduced-motion:reduce){.rays,.bg span,h1,.btn,.float,.rain,.shake{animation:none!important}.rain,.float{display:none}}
 </style>
 </head>
 <body>
+<div class="rays"></div><div class="vig"></div><div class="bg" id="bg"></div>
+<div class="app" id="app">
 <h1>Какашкометр</h1>
 <p class="sub">Серьёзная статистика для несерьёзных людей</p>
 <div class="rank" id="rank">…</div>
-<div class="total"><span id="total">0</span><small>раз всего</small></div>
-
+<div class="total" id="totalBox"><span id="total">0</span><small>раз всего</small></div>
 <button class="btn" id="btn" aria-label="Отметить поход">💩</button>
 <div class="cta">Нажми, когда сходил(а)</div>
-
 <div class="stats">
   <div class="stat"><b id="today">0</b><span>сегодня</span></div>
   <div class="stat"><b id="week">0</b><span>за 7 дней</span></div>
   <div class="stat"><b id="best">0</b><span>рекорд за день</span></div>
 </div>
-
 <div class="week"><div class="bars" id="bars"></div></div>
-
 <p class="last" id="last"></p>
 <button class="undo" id="undo">Нажал(а) случайно? Отменить</button>
+</div>
 
 <script>
 const tg = window.Telegram && Telegram.WebApp;
-if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#e9f3f1'); tg.setBackgroundColor('#e9f3f1'); } catch(e){} }
+if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#f2b632'); tg.setBackgroundColor('#f2b632'); } catch(e){} }
 
 const KEY = 'poop_v1';
 let state = { t: 0, d: {}, l: 0 };
+const hasCloud = () => tg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9');
 
-// Хранилище: облако Telegram (синхронизируется между устройствами), запасной вариант — localStorage
 function load(cb){
   const done = raw => { try { if (raw) state = Object.assign(state, JSON.parse(raw)); } catch(e){} cb(); };
-  if (tg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9')) {
-    tg.CloudStorage.getItem(KEY, (err, v) => done(err ? null : v));
-  } else {
-    let v = null; try { v = localStorage.getItem(KEY); } catch(e){}
-    done(v);
-  }
+  if (hasCloud()) tg.CloudStorage.getItem(KEY, (err, v) => done(err ? null : v));
+  else { let v = null; try { v = localStorage.getItem(KEY); } catch(e){} done(v); }
 }
 function save(){
   const raw = JSON.stringify(state);
-  if (tg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9')) {
-    tg.CloudStorage.setItem(KEY, raw, () => {});
-  } else {
-    try { localStorage.setItem(KEY, raw); } catch(e){}
-  }
+  if (hasCloud()) tg.CloudStorage.setItem(KEY, raw, () => {});
+  else { try { localStorage.setItem(KEY, raw); } catch(e){} }
 }
 
 const pad = n => String(n).padStart(2,'0');
 const dayKey = dt => dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate());
 const $ = id => document.getElementById(id);
+const rnd = (a,b) => a + Math.random() * (b - a);
+const EMO = ['💩','💩','💩','🧻','💨','🚽','🪠'];
 
 function rankFor(n){
   if (n === 0) return 'Трон ждёт тебя';
@@ -150,20 +158,59 @@ function render(){
   $('last').textContent = ago(state.l);
   $('undo').disabled = !(state.d[today] > 0);
 }
-
 function prune(){
   const keys = Object.keys(state.d).sort();
   while (keys.length > 90) delete state.d[keys.shift()];
 }
 
+// фон: медленно плывущие какашки
+(function(){
+  let h = '';
+  for (let i = 0; i < 14; i++) {
+    h += '<span style="left:' + rnd(0,95).toFixed(0) + '%;font-size:' + rnd(24,56).toFixed(0) + 'px;animation-duration:' + rnd(14,30).toFixed(0) + 's;animation-delay:-' + rnd(0,30).toFixed(0) + 's">' + EMO[i % EMO.length] + '</span>';
+  }
+  $('bg').innerHTML = h;
+})();
+
 function burst(x, y){
   const el = document.createElement('div');
   el.className = 'float';
-  el.textContent = ['💩','💩','🧻','💨','🚽'][Math.floor(Math.random() * 5)];
-  el.style.left = (x - 17 + (Math.random() * 80 - 40)) + 'px';
+  el.textContent = EMO[Math.floor(Math.random() * EMO.length)];
+  el.style.left = (x - 17 + rnd(-40,40)) + 'px';
   el.style.top = (y - 17) + 'px';
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 950);
+}
+
+const PARTY = [
+  'Унитаз гордится тобой!','Фаянсовый друг рукоплещет!','Сантехники в панике!',
+  'Бумага ещё осталась? Проверь!','Вот это продуктивность!','Туалетный марафонец!',
+  'Легенда санузла!','Ты в одном шаге от Нобелевки (по какашкам)!','Канализация шлёт привет!'
+];
+function celebrate(n){
+  // дождь из какашек
+  for (let i = 0; i < 45; i++) {
+    const r = document.createElement('div');
+    r.className = 'rain';
+    r.textContent = EMO[Math.floor(Math.random() * EMO.length)];
+    r.style.left = rnd(-2,96) + '%';
+    r.style.fontSize = rnd(28,64) + 'px';
+    r.style.setProperty('--r', rnd(-540,540) + 'deg');
+    r.style.animationDuration = rnd(1.6,3.2) + 's';
+    r.style.animationDelay = rnd(0,1.2) + 's';
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 4800);
+  }
+  // плашка
+  const p = document.createElement('div');
+  p.className = 'party';
+  p.innerHTML = '<div><big>💩 ' + n + '! 💩</big><p>' + PARTY[(n / 10 - 1) % PARTY.length] + '</p></div>';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 2700);
+  // тряска экрана
+  const app = $('app'); app.classList.add('shake');
+  setTimeout(() => app.classList.remove('shake'), 650);
+  try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch(_){}
 }
 
 $('btn').addEventListener('click', e => {
@@ -171,9 +218,11 @@ $('btn').addEventListener('click', e => {
   state.d[k] = (state.d[k] || 0) + 1;
   state.t += 1; state.l = Date.now();
   prune(); save(); render();
+  const tb = $('totalBox'); tb.classList.remove('bump'); void tb.offsetWidth; tb.classList.add('bump');
   const r = e.currentTarget.getBoundingClientRect();
   burst(r.left + r.width / 2, r.top + 40);
   try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('heavy'); } catch(_){}
+  if (state.t % 10 === 0) celebrate(state.t);
 });
 
 $('undo').addEventListener('click', () => {
